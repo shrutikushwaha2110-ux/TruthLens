@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "truthlens": {
+      "command": "C:\\Users\\ajitk\\Desktop\\truthlens\\backend\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\ajitk\\Desktop\\truthlens\\backend\\truthlens_mcp.py"]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    }
+  }
+}

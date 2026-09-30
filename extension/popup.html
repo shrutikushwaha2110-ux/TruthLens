@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>TruthLens</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="tl-popup-header">
+      <span class="tl-popup-title">TruthLens</span>
+      <label class="tl-switch">
+        <input type="checkbox" id="tl-enabled-toggle" />
+        <span class="tl-switch-slider"></span>
+      </label>
+    </header>
+
+    <p class="tl-popup-subtitle">Live check on the YouTube Short you're watching.</p>
+
+    <ul class="tl-legend">
+      <li><span class="tl-swatch tl-checking"></span> Checking…</li>
+      <li><span class="tl-swatch tl-real"></span> Likely Real</li>
+      <li><span class="tl-swatch tl-ai"></span> Likely AI-Generated</li>
+      <li><span class="tl-swatch tl-unsure"></span> Unsure</li>
+      <li><span class="tl-swatch tl-disclosed"></span> AI (creator disclosed)</li>
+    </ul>
+
+    <p class="tl-popup-footnote">Click a badge on the page to see why.</p>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

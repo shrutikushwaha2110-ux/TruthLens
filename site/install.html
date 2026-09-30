@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Install — TruthLens</title>
+  <meta name="description" content="How to run the TruthLens backend and load the Chrome extension." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">Install</p>
+        <h1>Run TruthLens locally</h1>
+        <p class="tl-lede">Everything runs on your own machine — no account, no paid API, no data
+           leaving your computer except the fact-check lookup (optional, off by default).</p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>1. Start the backend</h2>
+        <p>From the project root, in a terminal (Windows):</p>
+        <code class="tl-code">backend\.venv\Scripts\python.exe -m uvicorn app:app --port 8000 --app-dir backend</code>
+        <p class="tl-muted">
+          The first run downloads both detector models from Hugging Face, which can take a few
+          minutes. Leave this terminal running — the extension, this website, and the audit
+          subagent all depend on it being up at <code>http://localhost:8000</code>.
+        </p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>2. Load the Chrome extension</h2>
+        <ol>
+          <li>Open <code>chrome://extensions</code></li>
+          <li>Turn on <strong>Developer mode</strong> (top-right toggle)</li>
+          <li>Click <strong>Load unpacked</strong></li>
+          <li>Select the <code>extension</code> folder inside the project (not its parent folder)</li>
+          <li>Open <a href="https://www.youtube.com/shorts" target="_blank" rel="noopener noreferrer">youtube.com/shorts</a> and scroll — a badge should appear on the active Short within a few seconds</li>
+        </ol>
+        <p class="tl-muted">If you edit extension files, click the reload icon on the TruthLens
+           card in <code>chrome://extensions</code> to pick up the changes.</p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>3. Optional: Claude Code integration</h2>
+        <p>
+          The <code>truthlens</code> and <code>playwright</code> MCP servers are registered in
+          <code>.mcp.json</code> at the project root and are offered for approval when Claude Code
+          starts in this folder. Check <code>/mcp</code> to confirm both are connected,
+          <code>/agents</code> for the <code>feed-auditor</code> subagent, and <code>/hooks</code>
+          for the quality-check hook. See <a href="about.html">About</a> for what each piece does.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

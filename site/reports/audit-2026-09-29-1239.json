@@ -1,0 +1,151 @@
+{
+  "audit_date": "2026-09-29T12:39:00",
+  "feed": "https://www.youtube.com/shorts",
+  "shorts_requested": 10,
+  "shorts_completed": 9,
+  "results": [
+    {
+      "url": "https://www.youtube.com/shorts/ifjNzP5HAP8",
+      "title": "bro is on another level 🗿🔥 #mindset #selfimprovement #motivation #discipline",
+      "verdict": "Likely AI-Generated",
+      "confidence": 95,
+      "content_ai": 0.9811280369758606,
+      "reason": "3 of 3 frames looked AI-generated to both detectors.",
+      "frames": [
+        {"file": "audit/frames/short-1-frame-1.png", "ateeqq": 0.9999597072601318, "sdxl_detector": 0.9622963666915894, "frame_ai": 0.9811280369758606},
+        {"file": "audit/frames/short-1-frame-2.png", "ateeqq": 0.9999290704727173, "sdxl_detector": 0.874114990234375, "frame_ai": 0.9370220303535461},
+        {"file": "audit/frames/short-1-frame-3.png", "ateeqq": 0.999966025352478, "sdxl_detector": 0.9853128790855408, "frame_ai": 0.9926394522190094}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/VQtGYPzPEWw",
+      "title": "India's Human Calculator 🧠🇮🇳 #india #human #calculus #boy #aura #calculation #game #meme #viral",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on every frame (ateeqq ~1.00 vs sdxl_detector ~0.00).",
+      "frames": [
+        {"file": "audit/frames/short-2-frame-1.png", "ateeqq": 0.9997344613075256, "sdxl_detector": 0.000024084365577436984, "frame_ai": 0.49987927283655154},
+        {"file": "audit/frames/short-2-frame-2.png", "ateeqq": 0.9997794032096863, "sdxl_detector": 1.3485301053606236e-7, "frame_ai": 0.4998897690313484},
+        {"file": "audit/frames/short-2-frame-3.png", "ateeqq": 0.9995825886726379, "sdxl_detector": 1.95035522665421e-6, "frame_ai": 0.4997922695139323}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/8HBRBmUpkRQ",
+      "title": "This little moment says a lot about honesty 😭❤️ #shortsfeed #shorts #viralvideo",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on every frame (ateeqq ~1.00 vs sdxl_detector ~0.01-0.08).",
+      "frames": [
+        {"file": "audit/frames/short-3-frame-1.png", "ateeqq": 0.9970237612724304, "sdxl_detector": 0.00842810794711113, "frame_ai": 0.5027259346097708},
+        {"file": "audit/frames/short-3-frame-2.png", "ateeqq": 0.9995301961898804, "sdxl_detector": 0.08367493748664856, "frame_ai": 0.5416025668382645},
+        {"file": "audit/frames/short-3-frame-3.png", "ateeqq": 0.9995301961898804, "sdxl_detector": 0.08367493748664856, "frame_ai": 0.5416025668382645, "note": "screenshot identical to frame 2 (capture retried after a timeout on this Short)"}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/fKqDyLfRkrY",
+      "title": "ఏడుకొండల వైపు అడుగులు వేశా🙏🙏#alipiristeps #tirupati #tirupathi #govinda #god #reels #viral #fyp",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on at least one frame (frame 1: ateeqq 0.999 vs sdxl 0.0002; frame 2: ateeqq 0.993 vs sdxl 0.023), even though frame 3 alone would have read Likely Real (92%).",
+      "frames": [
+        {"file": "audit/frames/short-4-frame-1.png", "ateeqq": 0.9986914992332458, "sdxl_detector": 0.00023399344354402274, "frame_ai": 0.49946274633839494},
+        {"file": "audit/frames/short-4-frame-2.png", "ateeqq": 0.9932604432106018, "sdxl_detector": 0.023251192644238472, "frame_ai": 0.5082558179274201},
+        {"file": "audit/frames/short-4-frame-3.png", "ateeqq": 0.1601009964942932, "sdxl_detector": 1.1305515101867059e-7, "frame_ai": 0.08005055477472212}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/ycRHUJZYOkE",
+      "title": "Thala for a reason 🗿🔥",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on every frame (ateeqq ~1.00 vs sdxl_detector ~0.00).",
+      "frames": [
+        {"file": "audit/frames/short-5-frame-1.png", "ateeqq": 0.9998648166656494, "sdxl_detector": 0.000022484164219349623, "frame_ai": 0.4999436504149344},
+        {"file": "audit/frames/short-5-frame-2.png", "ateeqq": 0.9998181462287903, "sdxl_detector": 0.0000029448185614455724, "frame_ai": 0.49991054552367586},
+        {"file": "audit/frames/short-5-frame-3.png", "ateeqq": 0.9998549222946167, "sdxl_detector": 0.00009572660201229155, "frame_ai": 0.4999753244483145}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/nXNpsjfNL-g",
+      "title": "21 September 2026",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on frame 2 (ateeqq 0.997 vs sdxl 0.009), even though frames 1 and 3 alone would have read Likely Real (95%).",
+      "frames": [
+        {"file": "audit/frames/short-6-frame-1.png", "ateeqq": 0.010012884624302387, "sdxl_detector": 0.09374232590198517, "frame_ai": 0.05187760526314378},
+        {"file": "audit/frames/short-6-frame-2.png", "ateeqq": 0.9968229532241821, "sdxl_detector": 0.009499648585915565, "frame_ai": 0.5031613009050488},
+        {"file": "audit/frames/short-6-frame-3.png", "ateeqq": 0.06695393472909927, "sdxl_detector": 0.000026872514354181476, "frame_ai": 0.03349040362172673}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/2zQIztUzUM4",
+      "title": "Be BRAVE 🫡 #selfdefense #bebrave #bestrong #respect #dotherightthing #womensafety #fight #lifequotes",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on every frame (ateeqq ~1.00 vs sdxl_detector ~0.00-0.06).",
+      "frames": [
+        {"file": "audit/frames/short-7-frame-1.png", "ateeqq": 0.9997872710227966, "sdxl_detector": 0.00003781669511226937, "frame_ai": 0.49991254385895445},
+        {"file": "audit/frames/short-7-frame-2.png", "ateeqq": 0.9999035596847534, "sdxl_detector": 0.06362982094287872, "frame_ai": 0.5317666903138161},
+        {"file": "audit/frames/short-7-frame-3.png", "ateeqq": 0.9997643828392029, "sdxl_detector": 0.000015320698366849683, "frame_ai": 0.49988985176878487}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/IfhNlKiQ-M0",
+      "title": "Craziest Indian Train Travel Moments! 🚂🤯 | Reaction Video",
+      "error": "Screenshot capture failed for frame 3: the Playwright browser unexpectedly navigated to about:blank during/after the screenshot call. Frames 1 and 2 were captured but the Short is recorded as an error per instructions rather than scored on 2 of 3 frames.",
+      "partial_frames_captured": [
+        {"file": "audit/frames/short-8-frame-1.png", "note": "captured but not analyzed, since the Short overall is marked error"},
+        {"file": "audit/frames/short-8-frame-2.png", "note": "captured but not analyzed, since the Short overall is marked error"}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/1j_R6LBx6lQ",
+      "title": "Normal save VS Genuine Love ❤️‍🩹",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on frames 2 and 3 (ateeqq ~1.00 vs sdxl ~0.005-0.02), even though frame 1 alone would have read Likely Real (95%).",
+      "frames": [
+        {"file": "audit/frames/short-9-frame-1.png", "ateeqq": 0.018969915807247162, "sdxl_detector": 0.000012094078556401655, "frame_ai": 0.009491004942901782},
+        {"file": "audit/frames/short-9-frame-2.png", "ateeqq": 0.999852180480957, "sdxl_detector": 0.004826344549655914, "frame_ai": 0.5023392625153065},
+        {"file": "audit/frames/short-9-frame-3.png", "ateeqq": 0.9994495511054993, "sdxl_detector": 0.022742154076695442, "frame_ai": 0.5110958525910974}
+      ]
+    },
+    {
+      "url": "https://www.youtube.com/shorts/XO5IukfwGb0",
+      "title": "Childhood and Adulthood US Flash Queen Sha’Carri Richardson The Amazing Transformation #shorts",
+      "verdict": "Unsure",
+      "confidence": null,
+      "reason": "The two detectors disagreed by more than 0.6 on every frame (ateeqq ~1.00 vs sdxl_detector ~0.00-0.01).",
+      "frames": [
+        {"file": "audit/frames/short-10-frame-1.png", "ateeqq": 0.9994840621948242, "sdxl_detector": 0.0003740806132555008, "frame_ai": 0.49992907140403986},
+        {"file": "audit/frames/short-10-frame-2.png", "ateeqq": 0.9994767308235168, "sdxl_detector": 0.00877208262681961, "frame_ai": 0.5041244067251682},
+        {"file": "audit/frames/short-10-frame-3.png", "ateeqq": 0.9977371692657471, "sdxl_detector": 0.00007651645864825696, "frame_ai": 0.49890684286219766}
+      ]
+    }
+  ],
+  "summary": {
+    "likely_real": 0,
+    "likely_ai_generated": 1,
+    "unsure": 8,
+    "error": 1
+  },
+  "model_disagreement_analysis": {
+    "note": "Data-gathering observations only. No verdict rules or code were changed for this run.",
+    "frames_analyzed": 27,
+    "shorts_analyzed": 9,
+    "mean_ateeqq_score_all_frames": 0.8606,
+    "mean_sdxl_detector_score_all_frames": 0.1194,
+    "mean_ateeqq_score_excluding_short_1": 0.8431,
+    "mean_sdxl_detector_score_excluding_short_1": 0.0168,
+    "shorts_with_per_frame_disagreement_over_0_6": 8,
+    "shorts_with_per_frame_disagreement_over_0_6_fraction": "8 of 9 (89%)",
+    "observations": [
+      "In 8 of the 9 successfully-analyzed Shorts, at least one frame had |ateeqq - sdxl_detector| > 0.6, which alone forces the video-level verdict to Unsure under rule 4, regardless of what the other two frames say.",
+      "ateeqq scored above 0.99 on 21 of the 27 frames (roughly 78%), including on Shorts that look like ordinary real footage (a train-travel reaction video's own frames aside, e.g. 'Thala for a reason', 'Be BRAVE', 'Childhood and Adulthood...Transformation'). Its average across all 27 frames was ~0.86.",
+      "sdxl_detector stayed below 0.10 on 24 of the 27 frames (89%) and averaged ~0.12 overall, or ~0.017 if Short 1 (the one Short both models agreed was AI-like) is excluded. It behaved far more consistently as a 'this looks real' signal on this sample.",
+      "ateeqq was also volatile frame-to-frame within the same Short, on frames captured only ~1 second apart of a single video: Short 4 went 0.999 -> 0.993 -> 0.160; Short 6 went 0.010 -> 0.997 -> 0.067; Short 9 went 0.019 -> 0.9998 -> 0.999. sdxl_detector's frame-to-frame swings on those same Shorts were much smaller (all under 0.03, 0.10, and 0.02 respectively).",
+      "Short 1 was the only case where both models agreed (both high), producing the run's one 'Likely AI-Generated' verdict; it also could plausibly be a stylized/filter-edited clip rather than ordinary raw footage, which is consistent with a real high AI-likelihood reading.",
+      "Net pattern: ateeqq appears biased toward high AI-probability scores on ordinary, compressed YouTube Shorts frames and is noisy from one sampled frame to the next, while sdxl_detector is comparatively stable and low on the same frames. Because the verdict rule treats ANY single-frame model gap over 0.6 as an immediate 'Unsure' (by design, to avoid guessing which detector to trust), ateeqq's high, spiky baseline is the main driver of both the frequent Unsure verdicts and the risk of a false 'Likely AI-Generated' call whenever it happens to spike on all 3 sampled frames of a real video."
+    ]
+  }
+}

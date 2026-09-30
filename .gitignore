@@ -1,0 +1,22 @@
+# Python virtual environment (huge, machine-specific)
+backend/.venv/
+__pycache__/
+*.pyc
+
+# Personal evaluation images — kept local only, never pushed.
+# See eval/README.md for what belongs here.
+eval/real/*
+eval/ai/*
+!eval/real/.gitkeep
+!eval/ai/.gitkeep
+
+# Claude Code local/machine-specific state (not shared config)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Playwright MCP debug artifacts (regenerated each run)
+.playwright-mcp/
+
+# OS files
+.DS_Store
+Thumbs.db

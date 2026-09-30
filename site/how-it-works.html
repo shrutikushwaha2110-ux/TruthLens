@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How it works — TruthLens</title>
+  <meta name="description" content="The pipeline behind TruthLens's live badge, why it uses two models and three frames, and its honest limits." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">How it works</p>
+        <h1>From a Short on your screen to a badge with a reason</h1>
+
+        <div class="tl-flow" role="img" aria-label="Flow diagram: you scroll, the extension spots the active Short, captures 3 real frames, the local server runs 2 AI detectors per frame plus creator-disclosure and fact-check checks, verdict rules combine everything, and a badge shows with confidence and reason">
+          <div class="tl-flow-step">You scroll</div>
+          <div class="tl-flow-arrow" aria-hidden="true">→</div>
+          <div class="tl-flow-step">Extension spots the active Short</div>
+          <div class="tl-flow-arrow" aria-hidden="true">→</div>
+          <div class="tl-flow-step">Captures 3 real frames</div>
+          <div class="tl-flow-arrow" aria-hidden="true">→</div>
+          <div class="tl-flow-step">Local server: 2 AI detectors per frame + disclosure + fact-check</div>
+          <div class="tl-flow-arrow" aria-hidden="true">→</div>
+          <div class="tl-flow-step">Verdict rules</div>
+          <div class="tl-flow-arrow" aria-hidden="true">→</div>
+          <div class="tl-flow-step">Badge with confidence and reason</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>Why 2 models and 3 frames?</h2>
+        <p>
+          One detector can be confidently wrong. Running two independently-trained open-source
+          models (<code>Ateeqq/ai-vs-human-image-detector</code> and
+          <code>Organika/sdxl-detector</code>) and checking whether they agree is a cheap, honest
+          way to catch that — when they sharply disagree, TruthLens says "Unsure" instead of
+          picking one at random. Sampling 3 frames across a Short (not just the thumbnail, and not
+          every single frame) balances catching a clip that changes partway through against the
+          cost of running two CPU models per frame.
+        </p>
+        <p>
+          In practice we also found the two models aren't equally reliable on ordinary,
+          re-compressed social video: one of them reads noisy and biased high on real footage more
+          often than the other. Rather than hide that, TruthLens takes the median of each model's
+          score across the 3 frames (so one noisy frame doesn't swing the result) and weights the
+          more reliable model more heavily in the final blend — an adjustment made from real
+          testing data, not a guess.
+        </p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>How MCP connects Claude</h2>
+        <p>
+          Two MCP (Model Context Protocol) servers let Claude Code act on this project directly.
+          The custom <strong>truthlens</strong> MCP server exposes the same detector the browser
+          extension uses, so Claude can analyze any local image or URL on request. The
+          <strong>Playwright</strong> MCP server gives Claude a real, controllable browser. The
+          <strong>feed-auditor</strong> subagent combines both: it scrolls a live YouTube Shorts
+          feed with Playwright, screenshots each Short, scores it with the truthlens MCP tools, and
+          writes a report — see <a href="audit.html">Audit</a> for the results of real runs.
+        </p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>Honest limits</h2>
+        <div class="tl-grid">
+          <div class="tl-card">
+            <h3>Samples frames, not every frame</h3>
+            <p>3 frames per Short is enough to catch most content, but a clip that's real for 2.9
+               seconds and switches at the very end could be missed.</p>
+          </div>
+          <div class="tl-card">
+            <h3>No audio deepfake check yet</h3>
+            <p>TruthLens only looks at video frames right now — a real video with a cloned voice
+               dubbed over it isn't something this version can catch.</p>
+          </div>
+          <div class="tl-card">
+            <h3>Laptop Chrome only</h3>
+            <p>The extension runs in desktop Chrome. It doesn't run inside the native YouTube,
+               Instagram, or Facebook phone apps.</p>
+          </div>
+          <div class="tl-card">
+            <h3>No detector is perfect</h3>
+            <p>Free, open-source detectors lose real accuracy on in-the-wild content — that's the
+               whole premise behind this project (see <a href="research.html">Research</a>).
+               Confidence is capped at 95% and "Unsure" is a valid, honest answer, not a failure.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

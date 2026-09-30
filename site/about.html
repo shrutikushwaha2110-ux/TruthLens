@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>About — TruthLens</title>
+  <meta name="description" content="The Claude Code pieces behind TruthLens, and who built it." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">About</p>
+        <h1>How TruthLens uses Claude Code</h1>
+        <p class="tl-lede">Five Claude Code building blocks work together on this project — here's
+           what each one does, in one line.</p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container tl-grid">
+        <div class="tl-card">
+          <h3>Skill — verdict-rules</h3>
+          <p>The exact rules for turning raw detector scores into an honest verdict and
+             confidence, so Claude follows the same logic every time it analyzes content.</p>
+        </div>
+        <div class="tl-card">
+          <h3>Subagent — feed-auditor</h3>
+          <p>Scrolls a real YouTube Shorts feed with a Claude-controlled browser, scores each
+             Short, and writes an audit report — see <a href="audit.html">Audit</a>.</p>
+        </div>
+        <div class="tl-card">
+          <h3>Hook — quality_check</h3>
+          <p>Runs after every file write or edit and blocks accidental API keys and broken
+             website HTML (missing <code>lang</code>, title, nav, footer, or image alt text)
+             before they land.</p>
+        </div>
+        <div class="tl-card">
+          <h3>MCP — truthlens</h3>
+          <p>Gives Claude two tools, <code>analyze_image_file</code> and
+             <code>analyze_image_url</code>, that call the same detector backend the browser
+             extension uses.</p>
+        </div>
+        <div class="tl-card">
+          <h3>MCP — Playwright</h3>
+          <p>Gives Claude a real, controllable browser, so the feed-auditor subagent can actually
+             scroll and screenshot a live feed instead of guessing what's on it.</p>
+        </div>
+        <div class="tl-card">
+          <h3>Plugin — truthlens</h3>
+          <p>Packages the Skill, Subagent, Hook, and both MCP servers together so they can be
+             installed into any other Claude Code project in one command.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>Team</h2>
+        <p>Built by Shruti.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

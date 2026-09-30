@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Try it — TruthLens</title>
+  <meta name="description" content="Upload an image or a video-frame screenshot and get a TruthLens verdict." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">Try it</p>
+        <h1>Upload an image and see the verdict</h1>
+        <p class="tl-lede">
+          Upload a photo, or a screenshot of a single video frame. This runs the exact same
+          detector pipeline the Chrome extension uses on YouTube Shorts, against your local
+          backend — nothing is uploaded anywhere else.
+        </p>
+
+        <form id="tl-try-form">
+          <div class="tl-dropzone">
+            <p>Choose an image to analyze</p>
+            <input type="file" id="tl-file-input" accept="image/*" required />
+            <div id="tl-preview-wrap" class="tl-preview-wrap" hidden>
+              <img id="tl-preview-img" class="tl-preview-img" alt="Preview of the image you selected to analyze" />
+            </div>
+          </div>
+          <div class="tl-btn-row">
+            <button type="submit" class="tl-btn tl-btn--primary" id="tl-analyze-btn">Analyze</button>
+          </div>
+        </form>
+
+        <div id="tl-result" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="try-it.js"></script>
+</body>
+</html>

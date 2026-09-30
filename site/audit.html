@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Feed audits — TruthLens</title>
+  <meta name="description" content="Reports from the feed-auditor subagent scrolling and checking real YouTube Shorts." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">Feed audit</p>
+        <h1>What the feed-auditor found on real Shorts</h1>
+        <p class="tl-lede">
+          Each report below was produced by the <strong>feed-auditor</strong> subagent: it opened
+          YouTube Shorts in a real, Claude-controlled browser (Playwright MCP), scrolled through a
+          batch of Shorts, screenshotted and scored each one with the same detector the extension
+          uses, and wrote out its raw findings — including any Shorts that errored.
+        </p>
+        <div id="tl-audit-list"><p class="tl-muted">Loading reports…</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+  <script src="audit.js"></script>
+</body>
+</html>

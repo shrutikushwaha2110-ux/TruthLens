@@ -1,0 +1,26 @@
+{
+  "generated_at": "2026-09-29T14:38:33.580891+00:00",
+  "total_images": 17,
+  "overall_accuracy": 0.5294117647058824,
+  "decisive_accuracy": 1.0,
+  "decisive_count": 9,
+  "unsure_count": 8,
+  "per_model_accuracy": {
+    "ateeqq": 0.9411764705882353,
+    "sdxl_detector": 0.5882352941176471
+  },
+  "counts": {
+    "real": {
+      "total": 9,
+      "likely_real": 3,
+      "likely_ai_generated": 0,
+      "unsure": 6
+    },
+    "ai": {
+      "total": 8,
+      "likely_real": 0,
+      "likely_ai_generated": 6,
+      "unsure": 2
+    }
+  }
+}

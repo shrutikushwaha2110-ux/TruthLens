@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Research — TruthLens</title>
+  <meta name="description" content="The three sources behind TruthLens and the research gap it addresses." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">Research</p>
+        <h1>The sources this project is built on</h1>
+        <p class="tl-lede">Every number on this site traces back to one of these three sources, an
+           evaluation run in <a href="results.html">Results</a>, or an audit report in
+           <a href="audit.html">Audit</a>. Nothing here is invented.</p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container tl-grid">
+        <div class="tl-card">
+          <h3>Deepfake-Eval-2024</h3>
+          <p>Chandra et al. (2025), "Deepfake-Eval-2024: A Multi-Modal In-the-Wild Benchmark of
+             Deepfakes Circulated in 2024."</p>
+          <p><strong>Finding:</strong> on real deepfakes collected from social media, open-source
+             detectors' AUC dropped by <strong>50% for video</strong>, <strong>48% for
+             audio</strong>, and <strong>45% for image</strong> models compared with previous lab
+             benchmarks.</p>
+          <p><a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">arXiv:2503.02857 →</a></p>
+        </div>
+
+        <div class="tl-card">
+          <h3>OpenAI's AI text classifier</h3>
+          <p>OpenAI's own classifier for detecting AI-written text.</p>
+          <p><strong>Finding:</strong> it correctly identified only <strong>26%</strong> of
+             AI-written text, and wrongly flagged human-written text as AI <strong>9%</strong> of
+             the time. It was withdrawn on <strong>July 20, 2023</strong> due to low accuracy.</p>
+          <p><a href="https://openai.com/index/new-ai-classifier-for-indicating-ai-written-text/" target="_blank" rel="noopener noreferrer">openai.com →</a></p>
+        </div>
+
+        <div class="tl-card">
+          <h3>C2PA content credentials</h3>
+          <p>Reporting on Google and Adobe's content-labeling standard for AI images.</p>
+          <p><strong>Finding:</strong> C2PA metadata used to label AI images "can easily be
+             stripped or swapped by bad actors" — a label is only as strong as the metadata
+             carrying it, and that metadata doesn't survive re-uploading or screenshotting.</p>
+          <p><a href="https://www.axios.com/2024/02/08/google-adobe-label-artificial-intelligence-deepfakes" target="_blank" rel="noopener noreferrer">axios.com →</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>The gap</h2>
+        <p>
+          Put together, these three findings describe the same gap from three different angles:
+          detectors that look great on clean benchmarks lose a large share of their accuracy on
+          real, in-the-wild content; classifiers get withdrawn once real-world use exposes how
+          often they're wrong; and metadata-based labels can simply be removed before content ever
+          reaches a feed.
+        </p>
+        <p>
+          TruthLens doesn't claim to close this gap — no free, local tool can. Instead it tries to
+          be <em>honest</em> about it: analyze the real frames (not metadata that can be stripped),
+          combine more than one signal, cap confidence at 95%, and say "Unsure" when the signals
+          genuinely disagree rather than force a guess. See <a href="how-it-works.html">How it
+          works</a> for the mechanics, and <a href="results.html">Results</a> for a measured
+          accuracy number on our own small test set.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

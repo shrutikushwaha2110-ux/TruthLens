@@ -1,0 +1,6 @@
+{
+  "name": "truthlens",
+  "description": "Detect AI-generated social media content: verdict Skill, feed-auditor Subagent, quality Hook, TruthLens detector MCP + Playwright MCP.",
+  "version": "1.0.0",
+  "author": { "name": "Shruti" }
+}

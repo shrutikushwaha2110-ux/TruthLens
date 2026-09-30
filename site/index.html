@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TruthLens — know what's real while you scroll</title>
+  <meta name="description" content="TruthLens checks the actual frames of short videos and posts for AI-generated content, live, while you scroll." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-hero">
+      <div class="tl-container">
+        <p class="tl-eyebrow">Applied AI · Web Development</p>
+        <h1>Know what's real while you scroll.</h1>
+        <p class="tl-lede">
+          AI-generated Shorts and posts look exactly like everything else in your feed.
+          TruthLens checks the actual video frames as you scroll — not the thumbnail — and shows
+          you a live badge with an honest confidence and a reason.
+        </p>
+        <div class="tl-btn-row">
+          <a class="tl-btn tl-btn--primary" href="try-it.html">Try It</a>
+          <a class="tl-btn tl-btn--secondary" href="install.html">Install</a>
+        </div>
+
+        <div class="tl-hero-visual">
+          <div class="tl-phone" role="img" aria-label="Illustration of a phone playing a short video with a green 'Likely Real, 95%' TruthLens badge in the top-left corner">
+            <div class="tl-phone-screen">
+              <span class="tl-phone-badge">Likely Real · 95%</span>
+              <p class="tl-phone-caption">@creator · original clip</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container tl-grid">
+        <div class="tl-card">
+          <h3>The problem</h3>
+          <p>AI-generated video is now common in feeds, and it's hard to spot by eye alone.</p>
+        </div>
+        <div class="tl-card">
+          <h3>The solution</h3>
+          <p>Analyze the real content frame by frame, combine several signals, and show the
+             result right inside the feed while you scroll.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

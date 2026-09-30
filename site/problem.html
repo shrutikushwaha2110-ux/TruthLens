@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The problem — TruthLens</title>
+  <meta name="description" content="Why AI-generated Shorts and posts are hard to spot, and the kinds of harm they cause." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="tl-nav">
+    <div class="tl-nav-inner">
+      <a class="tl-brand" href="index.html"><span class="tl-brand-mark" aria-hidden="true"></span>TruthLens</a>
+      <ul class="tl-nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="problem.html">Problem</a></li>
+        <li><a href="research.html">Research</a></li>
+        <li><a href="how-it-works.html">How it works</a></li>
+        <li><a href="try-it.html">Try it</a></li>
+        <li><a href="audit.html">Audit</a></li>
+        <li><a href="results.html">Results</a></li>
+        <li><a href="install.html">Install</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="tl-section">
+      <div class="tl-container">
+        <p class="tl-eyebrow">The problem</p>
+        <h1>AI-generated content is everywhere in the feed, and it looks like everything else.</h1>
+        <p class="tl-lede">
+          Short-form video platforms reward whatever keeps you watching. AI generators can now
+          produce that kind of content at a volume and speed no human creator can match, and it's
+          mixed into the same feed as real footage with no visual tell.
+        </p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>Kinds of harm this causes</h2>
+        <div class="tl-grid">
+          <div class="tl-card">
+            <h3>Scams</h3>
+            <p>Fabricated "before/after" or celebrity-endorsement clips used to sell fake products
+               or investment schemes.</p>
+          </div>
+          <div class="tl-card">
+            <h3>Fake news</h3>
+            <p>Synthetic footage presented as real events, spreading faster than any correction
+               can catch up to it.</p>
+          </div>
+          <div class="tl-card">
+            <h3>Deepfake ads</h3>
+            <p>A real person's likeness used without consent to promote something they never
+               endorsed.</p>
+          </div>
+        </div>
+        <p class="tl-muted">
+          These categories are described generally on purpose — this page doesn't cite made-up
+          statistics about how common each one is. See <a href="research.html">Research</a> for
+          the specific, sourced numbers this project is built on.
+        </p>
+      </div>
+    </section>
+
+    <section class="tl-section tl-section--tight">
+      <div class="tl-container">
+        <h2>Why this is hard to solve</h2>
+        <p>
+          Existing signals people rely on — a blurry face, a weird hand, a label in the metadata —
+          are all disappearing. Generators keep improving, and content-credential metadata like
+          C2PA can simply be stripped before upload. See <a href="how-it-works.html">How it
+          works</a> for how TruthLens approaches this instead: by looking at the actual pixels of
+          the content itself, every time, rather than trusting a label that can be removed.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="tl-footer">
+    <div class="tl-container">
+      <span>TruthLens — Phase 1: YouTube Shorts.</span>
+      <span>Research: <a href="https://arxiv.org/abs/2503.02857" target="_blank" rel="noopener noreferrer">Deepfake-Eval-2024 (arXiv:2503.02857)</a></span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

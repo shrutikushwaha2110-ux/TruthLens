@@ -1,0 +1,11 @@
+{
+  "name": "truthlens-marketplace",
+  "owner": { "name": "Shruti" },
+  "plugins": [
+    {
+      "name": "truthlens",
+      "source": "./plugin/truthlens",
+      "description": "TruthLens toolkit: Skill + Subagent + Hook + 2 MCP servers"
+    }
+  ]
+}
