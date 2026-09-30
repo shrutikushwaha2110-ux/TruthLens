@@ -3,7 +3,9 @@
 TruthLens analyzes the ACTUAL CONTENT people scroll past — the frames of short videos and the
 images in posts — not thumbnails. A Chrome extension shows a live badge on the video/post
 currently on screen: Likely Real / Likely AI-Generated / Unsure / AI (creator disclosed), with
-a confidence % and a "why". Phase 1: YouTube Shorts. Later phases: Instagram and Facebook web.
+a confidence % and a "why". Phase 1: YouTube Shorts. Phase 2 (in progress): Instagram Reels —
+scoped to video Reels only, using best-effort URL/selector matching since Instagram requires a
+login to inspect its DOM directly; not yet live-verified. Later: Instagram feed posts, Facebook web.
 
 Two MCP servers connect Claude to the project: a custom "truthlens" MCP server (the detector)
 and Playwright MCP (a browser Claude controls) for an automatic "Feed Audit".

@@ -2,10 +2,11 @@
   "manifest_version": 3,
   "name": "TruthLens",
   "version": "1.0.0",
-  "description": "Shows a live badge on YouTube Shorts telling you whether what you're watching looks AI-generated, real, or unsure — checked frame by frame, not by thumbnail.",
+  "description": "Shows a live badge on YouTube Shorts and Instagram Reels telling you whether what you're watching looks AI-generated, real, or unsure — checked frame by frame, not by thumbnail.",
   "permissions": ["activeTab", "scripting", "storage"],
   "host_permissions": [
     "https://www.youtube.com/*",
+    "https://www.instagram.com/*",
     "http://localhost:8000/*",
     "<all_urls>"
   ],
@@ -14,7 +15,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
+      "matches": ["https://www.youtube.com/*", "https://www.instagram.com/*"],
       "js": ["content.js"],
       "css": ["content.css"],
       "run_at": "document_idle"

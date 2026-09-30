@@ -1,11 +1,14 @@
 /**
- * TruthLens content script — runs on youtube.com.
- * Watches for the active Short/video, captures a few real frames of it,
+ * TruthLens content script — runs on youtube.com and instagram.com.
+ * Watches for the active Short/Reel/video, captures a few real frames of it,
  * sends them to the local backend for analysis, and shows a badge with the verdict.
  *
- * captureFrames() and showBadge() are written as standalone, reusable functions
- * (not tied to YouTube's DOM beyond the passed-in <video> element) so Instagram/
- * Facebook content scripts can reuse them in a later phase.
+ * captureFrames() and showBadge() are standalone, reusable functions (not tied to any
+ * one site's DOM beyond the passed-in <video> element) — the only per-platform code is
+ * getContentId()/getPlatformLabel()/isDisclosed()/getCaption() below. Instagram support
+ * currently covers Reels (video) only; static image feed posts are a separate future
+ * addition, since they need a different capture path (no <video> element to sample).
+ * A Facebook content script would follow the same pattern.
  */
 
 (() => {
@@ -53,8 +56,13 @@
     return best;
   }
 
+  function isInstagram() {
+    return location.hostname === "www.instagram.com";
+  }
+
   function getContentId() {
     const path = location.pathname;
+
     if (path.startsWith("/shorts/")) {
       return `shorts:${path.split("/")[2]}`;
     }
@@ -62,17 +70,26 @@
       const v = new URLSearchParams(location.search).get("v");
       if (v) return `watch:${v}`;
     }
+    if (isInstagram()) {
+      // Instagram Reels permalinks use either /reel/<shortcode>/ or /reels/<shortcode>/.
+      const match = path.match(/^\/(?:reel|reels)\/([^/]+)/);
+      if (match) return `instagram-reel:${match[1]}`;
+    }
     return null;
   }
 
   function getPlatformLabel() {
+    if (isInstagram()) return "instagram-reel";
     return location.pathname.startsWith("/shorts/") ? "youtube-shorts" : "youtube-watch";
   }
 
   function isDisclosed() {
-    // YouTube shows an "Altered or synthetic content" label for creator-disclosed AI content.
     const text = document.body.innerText || "";
-    return text.includes("Altered or synthetic content");
+    // YouTube's disclosure label for creator-disclosed AI content.
+    if (text.includes("Altered or synthetic content")) return true;
+    // Meta's disclosure label for AI-generated/edited content on Instagram/Facebook.
+    if (isInstagram() && text.includes("AI info")) return true;
+    return false;
   }
 
   function getCaption() {
@@ -80,6 +97,15 @@
       "yt-shorts-video-title-view-model, h1.ytd-watch-metadata, #title h1"
     );
     if (titleEl && titleEl.textContent.trim()) return titleEl.textContent.trim();
+
+    if (isInstagram()) {
+      // Best-effort selector — Instagram's DOM is obfuscated and requires login to
+      // inspect directly, so this hasn't been live-verified. Falls back to
+      // document.title below if it doesn't match.
+      const igCaption = document.querySelector("article h1, article span[dir='auto']");
+      if (igCaption && igCaption.textContent.trim()) return igCaption.textContent.trim();
+    }
+
     return document.title || null;
   }
 

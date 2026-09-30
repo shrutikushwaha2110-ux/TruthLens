@@ -3,7 +3,7 @@
 TruthLens analyzes the ACTUAL CONTENT people scroll past — the frames of short videos and the
 images in posts — not thumbnails. A Chrome extension shows a live badge on the video/post
 currently on screen: Likely Real / Likely AI-Generated / Unsure / AI (creator disclosed), with a
-confidence % and a "why". Phase 1 (this build): YouTube Shorts.
+confidence % and a "why". Phase 1: YouTube Shorts. Phase 2 (in progress): Instagram Reels.
 
 It's built on a documented gap in the research: free, open-source AI detectors look great on
 clean benchmarks but lose a large share of their accuracy on real, in-the-wild content
@@ -64,6 +64,11 @@ truthlens/
   cloned voice isn't caught by this version.
 - **Laptop Chrome only.** The extension doesn't run inside the native YouTube/Instagram/Facebook
   phone apps.
+- **Instagram support is Reels only, and not yet live-verified.** Instagram requires a login to
+  inspect its DOM, so the `/reel/` and `/reels/` URL-matching and caption selector in
+  `extension/content.js` are best-effort based on Instagram's public URL conventions, not
+  confirmed against the real page. Static image feed posts aren't supported yet — they need a
+  different capture path since there's no `<video>` element to sample frames from.
 - **No detector is perfect.** Confidence is capped at 95%, and "Unsure" is treated as a valid,
   honest answer — not a failure. A real feed-audit run found one of the two detector models reads
   biased and noisy on ordinary compressed YouTube video; a separate small evaluation
@@ -75,11 +80,13 @@ truthlens/
 
 ## Next phase
 
-Instagram and Facebook web support. The extension's `captureFrames(element)` and
-`showBadge(element, result)` functions in `extension/content.js` were written generic to any
-`<video>` (or, for a static post, a single captured frame) — a new content script for
-instagram.com/facebook.com can reuse them directly, and only needs its own logic for finding the
-active post/video in each site's DOM and detecting navigation between posts.
+Instagram Reels support was added reusing the same `captureFrames(element)` and
+`showBadge(element, result)` functions — they were written generic to any `<video>` element from
+the start, so no changes were needed there; only `getContentId()`, `getPlatformLabel()`,
+`isDisclosed()`, and `getCaption()` in `extension/content.js` needed Instagram-specific branches.
+Still to do: live-verify the Instagram selectors against a real logged-in session, add Instagram
+static image feed posts (needs a non-video capture path — a single screenshot instead of 3 video
+frames), and Facebook web, following the same pattern.
 
 ## File checklist
 
