@@ -27,6 +27,20 @@ kind of content in the same audit, so the blended content_ai score below weights
 more heavily (see ATEEQQ_WEIGHT / SDXL_WEIGHT). This is an evidence-based calibration
 choice — both models are still used, and the disagreement check still compares their
 unweighted, independent reads.
+
+A manual audit of 8 real Reels from a real, logged-in Instagram account (2026-09-30)
+found something worse and different on that platform: both models frequently agree
+with each other at 95%+ AI-probability on content that all available evidence says is
+ordinary real footage (one case was visually confirmed as a plain, unfiltered video of
+a person showing jewellery — no visible AI or heavy editing). Re-scoring the identical
+frame as a lossless PNG vs. our normal JPEG capture gave nearly identical scores
+(ateeqq 99.99% either way; sdxl_detector 96% vs. 91%), which rules out our own capture
+compression as the cause — this looks like a shared blind spot in both models on
+Instagram's specific video encoding, not something a weighting change can fix, since
+the models genuinely agree with each other. Rather than silently overriding two
+agreeing models (which would mean inventing a result), Instagram Reels gets a lower
+confidence ceiling (see PLATFORM_MAX_CONFIDENCE) to honestly reflect this measured,
+worse reliability, without ever touching the "AI-Generated" vs. "Real" label itself.
 """
 
 import statistics
@@ -42,6 +56,13 @@ CLOSE_CALL_CONFIDENCE = 65
 ATEEQQ_WEIGHT = 0.3
 SDXL_WEIGHT = 0.7
 
+# Default confidence ceiling (module docstring: "we are never 100% sure"), and a lower,
+# platform-specific ceiling for platforms where a real audit measured worse reliability.
+DEFAULT_MAX_CONFIDENCE = 95
+PLATFORM_MAX_CONFIDENCE = {
+    "instagram-reel": 70,
+}
+
 
 def _frame_ai_scores(frame_scores):
     """frame_scores: list of {"ateeqq": float, "sdxl_detector": float}
@@ -50,23 +71,29 @@ def _frame_ai_scores(frame_scores):
     return [statistics.mean(frame.values()) for frame in frame_scores]
 
 
-def verdict(frame_scores, disclosed=False, factcheck=None):
+def verdict(frame_scores, disclosed=False, factcheck=None, platform=None):
     """
     frame_scores: list of per-frame dicts from score_image().
                   1 item for an image post, 3 items for a video.
     disclosed:    True if the platform says the creator disclosed AI use.
     factcheck:    optional dict with a "rating" string and a "url", or None.
+    platform:     optional platform label (e.g. "instagram-reel") used only to look up a
+                  lower confidence ceiling where real testing has measured one; doesn't
+                  change which label (Real/AI/Unsure) is chosen.
 
     Returns a dict:
         {verdict, confidence, content_ai, frames, reasons, factcheck}
     """
     reasons = []
     factcheck_flag = None
+    max_confidence = PLATFORM_MAX_CONFIDENCE.get(platform, DEFAULT_MAX_CONFIDENCE)
 
     if disclosed:
+        # Disclosure is a fact the platform told us, not a detector reading, so it isn't
+        # subject to the platform's detector-reliability confidence cap above.
         result = {
             "verdict": "AI-Generated (creator disclosed)",
-            "confidence": 95,
+            "confidence": DEFAULT_MAX_CONFIDENCE,
             "content_ai": None,
             "frames": frame_scores,
             "reasons": ["The creator/platform disclosed this content is AI-generated."],
@@ -101,21 +128,33 @@ def verdict(frame_scores, disclosed=False, factcheck=None):
         reasons.append("signals disagree")
     elif content_ai >= 0.5:
         label = "Likely AI-Generated"
-        confidence = min(95, round(content_ai * 100))
+        raw_confidence = round(content_ai * 100)
+        confidence = min(max_confidence, raw_confidence)
         n_ai_frames = sum(1 for f in frame_ai if f >= 0.5)
         reasons.append(
             f"{n_ai_frames} of {len(frame_ai)} frame(s) looked AI-generated to both detectors."
         )
-        if confidence < CLOSE_CALL_CONFIDENCE:
+        if raw_confidence > max_confidence:
+            reasons.append(
+                f"Confidence capped at {max_confidence}% — real testing on this platform found "
+                "the detectors are less reliable here than usual."
+            )
+        elif confidence < CLOSE_CALL_CONFIDENCE:
             reasons.append("This is a close call — the signals leaned AI-generated but not strongly.")
     else:
         label = "Likely Real"
-        confidence = min(95, round((1 - content_ai) * 100))
+        raw_confidence = round((1 - content_ai) * 100)
+        confidence = min(max_confidence, raw_confidence)
         n_real_frames = sum(1 for f in frame_ai if f < 0.5)
         reasons.append(
             f"{n_real_frames} of {len(frame_ai)} frame(s) looked real to both detectors."
         )
-        if confidence < CLOSE_CALL_CONFIDENCE:
+        if raw_confidence > max_confidence:
+            reasons.append(
+                f"Confidence capped at {max_confidence}% — real testing on this platform found "
+                "the detectors are less reliable here than usual."
+            )
+        elif confidence < CLOSE_CALL_CONFIDENCE:
             reasons.append("This is a close call — the signals leaned real but not strongly.")
 
     factcheck_flag = _check_factcheck(factcheck)

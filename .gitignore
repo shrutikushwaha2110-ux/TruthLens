@@ -17,6 +17,11 @@ eval/ai/*
 # Playwright MCP debug artifacts (regenerated each run)
 .playwright-mcp/
 
+# Instagram audit frames — real content from a personal, logged-in feed. Local only,
+# never pushed. Only the aggregate findings go into docs/reports.
+audit/instagram-frames/
+audit/instagram-frames-raw/
+
 # OS files
 .DS_Store
 Thumbs.db

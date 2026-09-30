@@ -64,29 +64,40 @@ truthlens/
   cloned voice isn't caught by this version.
 - **Laptop Chrome only.** The extension doesn't run inside the native YouTube/Instagram/Facebook
   phone apps.
-- **Instagram support is Reels only, and not yet live-verified.** Instagram requires a login to
-  inspect its DOM, so the `/reel/` and `/reels/` URL-matching and caption selector in
-  `extension/content.js` are best-effort based on Instagram's public URL conventions, not
-  confirmed against the real page. Static image feed posts aren't supported yet — they need a
-  different capture path since there's no `<video>` element to sample frames from.
-- **No detector is perfect.** Confidence is capped at 95%, and "Unsure" is treated as a valid,
-  honest answer — not a failure. A real feed-audit run found one of the two detector models reads
-  biased and noisy on ordinary compressed YouTube video; a separate small evaluation
-  (`site/results.html`) found the *opposite* model was the noisy one on WhatsApp-compressed
-  photos. Different compression pipelines expose different weaknesses in each model — this is the
-  same phenomenon the research behind this project documents, playing out in our own testing.
-- **Small sample sizes.** Both the feed-audit and the accuracy evaluation used small samples (10
-  Shorts, ~17 images). Treat every number on this site as a snapshot, not a guarantee.
+- **Instagram support is Reels only.** The `/reel/`/`/reels/` URL-matching, caption selector, and
+  "AI content" disclosure text in `extension/content.js` are all live-verified against a real
+  logged-in Instagram session (2026-09-30). Static image feed posts still aren't supported — they
+  need a different capture path since there's no `<video>` element to sample frames from.
+- **Instagram Reels measurably confuse both detector models.** A manual audit of 8 real Reels
+  found both models agreeing at 95%+ AI-probability on content that all available evidence says
+  is ordinary real footage (one case was visually confirmed as a plain, unfiltered video). Testing
+  ruled out our own JPEG capture as the cause (a lossless PNG scored nearly identically) — this
+  looks like a shared blind spot in both models on Instagram's video encoding specifically, not
+  something a reweighting can fix, since the models genuinely agree with each other. Rather than
+  silently overriding two agreeing models, Instagram Reels gets a lower confidence ceiling (70%
+  instead of 95%) to honestly reflect this measured unreliability — the "Likely AI-Generated" vs.
+  "Likely Real" label itself is never touched.
+- **No detector is perfect.** Confidence is capped at 95% generally (70% on Instagram, above), and
+  "Unsure" is treated as a valid, honest answer — not a failure. A real feed-audit run found one of
+  the two detector models reads biased and noisy on ordinary compressed YouTube video; a separate
+  small evaluation (`site/results.html`) found the *opposite* model was the noisy one on
+  WhatsApp-compressed photos. Different compression pipelines expose different weaknesses in each
+  model — this is the same phenomenon the research behind this project documents, playing out in
+  our own testing.
+- **Small sample sizes.** The feed-audit, accuracy evaluation, and Instagram audit all used small
+  samples (10 Shorts, ~17 images, 8 Reels). Treat every number on this site as a snapshot, not a
+  guarantee.
 
 ## Next phase
 
 Instagram Reels support was added reusing the same `captureFrames(element)` and
 `showBadge(element, result)` functions — they were written generic to any `<video>` element from
 the start, so no changes were needed there; only `getContentId()`, `getPlatformLabel()`,
-`isDisclosed()`, and `getCaption()` in `extension/content.js` needed Instagram-specific branches.
-Still to do: live-verify the Instagram selectors against a real logged-in session, add Instagram
-static image feed posts (needs a non-video capture path — a single screenshot instead of 3 video
-frames), and Facebook web, following the same pattern.
+`isDisclosed()`, and `getCaption()` in `extension/content.js` needed Instagram-specific branches,
+and all were verified against a real logged-in session. Still to do: Instagram static image feed
+posts (needs a non-video capture path — a single screenshot instead of 3 video frames), Facebook
+web following the same pattern, and a larger Instagram audit to refine the 70% confidence cap
+(currently based on 8 Reels) as more data comes in.
 
 ## File checklist
 

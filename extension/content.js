@@ -87,8 +87,10 @@
     const text = document.body.innerText || "";
     // YouTube's disclosure label for creator-disclosed AI content.
     if (text.includes("Altered or synthetic content")) return true;
-    // Meta's disclosure label for AI-generated/edited content on Instagram/Facebook.
-    if (isInstagram() && text.includes("AI info")) return true;
+    // Meta's disclosure label, verified live on a real post on 2026-09-30 (a button/div
+    // reading exactly "AI content"). "AI info" kept as a fallback in case an older or
+    // regional build of the UI uses different wording.
+    if (isInstagram() && (text.includes("AI content") || text.includes("AI info"))) return true;
     return false;
   }
 
@@ -99,11 +101,34 @@
     if (titleEl && titleEl.textContent.trim()) return titleEl.textContent.trim();
 
     if (isInstagram()) {
-      // Best-effort selector — Instagram's DOM is obfuscated and requires login to
-      // inspect directly, so this hasn't been live-verified. Falls back to
-      // document.title below if it doesn't match.
-      const igCaption = document.querySelector("article h1, article span[dir='auto']");
-      if (igCaption && igCaption.textContent.trim()) return igCaption.textContent.trim();
+      // Verified live on 2026-09-30 against a real logged-in session: Instagram's Reels
+      // caption has NO <article> wrapper at all (unlike feed posts), and isn't a real
+      // <button> — it's a div[role="button"] that also wraps the post's hashtag links
+      // (e.g. <a href="/explore/tags/...">). Multiple Reels are preloaded in the DOM at
+      // once, so anchor on a hashtag link that's actually visible in the viewport right
+      // now, then walk up to its role="button" wrapper. A caption with no hashtags at
+      // all isn't found this way and falls back to document.title below — an accepted
+      // limitation, not every caption uses hashtags.
+      const tagLinks = Array.from(document.querySelectorAll('a[href*="/explore/tags/"]'));
+      const visibleLink = tagLinks.find((a) => {
+        const r = a.getBoundingClientRect();
+        return (
+          r.width > 0 &&
+          r.height > 0 &&
+          r.top < window.innerHeight &&
+          r.bottom > 0 &&
+          r.left < window.innerWidth &&
+          r.right > 0
+        );
+      });
+      if (visibleLink) {
+        let el = visibleLink;
+        for (let i = 0; i < 4 && el.parentElement; i++) {
+          el = el.parentElement;
+          if (el.getAttribute("role") === "button") break;
+        }
+        if (el.textContent && el.textContent.trim()) return el.textContent.trim();
+      }
     }
 
     return document.title || null;

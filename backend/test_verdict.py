@@ -4,7 +4,7 @@ or plainly:
     backend/.venv/Scripts/python backend/test_verdict.py
 """
 
-from verdict import ATEEQQ_WEIGHT, SDXL_WEIGHT, verdict
+from verdict import ATEEQQ_WEIGHT, PLATFORM_MAX_CONFIDENCE, SDXL_WEIGHT, verdict
 
 
 def frame(ateeqq, sdxl):
@@ -102,6 +102,27 @@ def test_confidence_never_above_95():
     assert r["confidence"] <= 95
     r2 = verdict([frame(0.0, 0.0)])
     assert r2["confidence"] <= 95
+
+
+def test_instagram_platform_confidence_cap():
+    # A real audit of 8 Reels from a logged-in account (2026-09-30) found both detectors
+    # agree confidently (95%+) on content later confirmed to likely be real — Instagram
+    # gets a lower confidence ceiling as a result, without changing the label itself.
+    ig_cap = PLATFORM_MAX_CONFIDENCE["instagram-reel"]
+    r = verdict([frame(1.0, 1.0)], platform="instagram-reel")
+    assert r["verdict"] == "Likely AI-Generated"
+    assert r["confidence"] == ig_cap
+    assert any("capped" in reason for reason in r["reasons"])
+
+    # The same scores on an unspecified platform still get the normal, higher cap.
+    r2 = verdict([frame(1.0, 1.0)])
+    assert r2["confidence"] == 95
+
+
+def test_instagram_disclosed_confidence_unaffected_by_platform_cap():
+    # Disclosure isn't a detector reading, so the platform's lower ceiling doesn't apply.
+    r = verdict([frame(0.1, 0.1)], disclosed=True, platform="instagram-reel")
+    assert r["confidence"] == 95
 
 
 def test_factcheck_flag_added_when_false():

@@ -95,12 +95,14 @@ def _lookup_factcheck(caption: str | None):
         return None
 
 
-def _run_pipeline(images: list[Image.Image], disclosed: bool, caption: str | None):
+def _run_pipeline(
+    images: list[Image.Image], disclosed: bool, caption: str | None, platform: str | None = None
+):
     # Scores all frames' model calls concurrently instead of one at a time — see
     # detector.score_images for why this is a real (not just cosmetic) speedup.
     frame_scores = detector.score_images(images)
     factcheck = _lookup_factcheck(caption)
-    return compute_verdict(frame_scores, disclosed=disclosed, factcheck=factcheck)
+    return compute_verdict(frame_scores, disclosed=disclosed, factcheck=factcheck, platform=platform)
 
 
 @app.post("/analyze/frames")
@@ -109,7 +111,7 @@ def analyze_frames(req: FramesRequest):
         return _result_cache[req.id]
 
     images = [_decode_base64_image(f) for f in req.frames]
-    result = _run_pipeline(images, req.disclosed, req.caption)
+    result = _run_pipeline(images, req.disclosed, req.caption, platform=req.platform)
     result["id"] = req.id
     result["platform"] = req.platform
     _result_cache[req.id] = result
