@@ -77,6 +77,13 @@ truthlens/
   silently overriding two agreeing models, Instagram Reels gets a lower confidence ceiling (70%
   instead of 95%) to honestly reflect this measured unreliability — the "Likely AI-Generated" vs.
   "Likely Real" label itself is never touched.
+- **YouTube Shorts have the same problem, found live.** A live session scrolling real Shorts
+  (2026-10-01) found both models agreeing at 90%+ on 10 of 17 Shorts; visually checking several of
+  those directly found at least two unambiguously real videos (someone filming themselves at a
+  concert with stage lighting; someone dancing in their own bedroom, door and light switch
+  visible, no filters) that both models confidently called AI-generated anyway. Same shape of
+  problem as Instagram, same fix: YouTube Shorts now also gets the 70% confidence ceiling instead
+  of 95%, with no change to the label itself.
 - **No detector is perfect.** Confidence is capped at 95% generally (70% on Instagram, above), and
   "Unsure" is treated as a valid, honest answer — not a failure. A real feed-audit run found one of
   the two detector models reads biased and noisy on ordinary compressed YouTube video; a separate
@@ -116,7 +123,7 @@ web following the same pattern, and a larger Instagram audit to refine the 70% c
 
 **Backend**
 - `backend/detector.py`, `backend/verdict.py`, `backend/app.py`, `backend/truthlens_mcp.py`
-- `backend/test_verdict.py` (15/15 passing), `backend/requirements.txt`
+- `backend/test_verdict.py` (20/20 passing), `backend/requirements.txt`
 
 **Extension**
 - `extension/manifest.json`, `extension/background.js`, `extension/content.js`,

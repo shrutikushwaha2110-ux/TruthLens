@@ -4,11 +4,11 @@ TruthLens analyzes the ACTUAL CONTENT people scroll past — the frames of short
 images in posts — not thumbnails. A Chrome extension shows a live badge on the video/post
 currently on screen: Likely Real / Likely AI-Generated / Unsure / AI (creator disclosed), with
 a confidence % and a "why". Phase 1: YouTube Shorts. Phase 2: Instagram Reels — video Reels only,
-selectors live-verified against a real logged-in session (2026-09-30). A real audit found both
-detector models share a blind spot on Instagram's video encoding (confidently, and wrongly per
-visual inspection, calling real footage AI-generated), so Instagram gets a lower confidence
-ceiling (70% vs. the usual 95%) to reflect that honestly — see backend/verdict.py. Later:
-Instagram feed posts, Facebook web.
+selectors live-verified against a real logged-in session (2026-09-30). Real audits found both
+detector models share a blind spot on both platforms' video encoding (confidently, and wrongly
+per visual inspection, calling real footage AI-generated) — YouTube Shorts (2026-10-01) and
+Instagram Reels (2026-09-30) both get a lower confidence ceiling (70% vs. the usual 95%) to
+reflect that honestly — see backend/verdict.py. Later: Instagram feed posts, Facebook web.
 
 Two MCP servers connect Claude to the project: a custom "truthlens" MCP server (the detector)
 and Playwright MCP (a browser Claude controls) for an automatic "Feed Audit".
@@ -83,3 +83,7 @@ truthlens/
 - No audio deepfake detection yet.
 - Laptop Chrome only — not phone apps.
 - No detector is perfect; confidence is capped at 95% and "Unsure" is a valid, honest answer.
+- Both YouTube Shorts and Instagram Reels get a reduced 70% confidence cap — real testing on each
+  platform found both detector models confidently agreeing on unambiguously real video anyway
+  (see backend/verdict.py docstring for the full evidence trail). The verdict label itself is
+  never changed by this, only the confidence ceiling.
