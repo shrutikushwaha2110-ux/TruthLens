@@ -43,18 +43,28 @@ confidence ceiling (see PLATFORM_MAX_CONFIDENCE) to honestly reflect this measur
 worse reliability, without ever touching the "AI-Generated" vs. "Real" label itself.
 
 The video weighting above is specifically wrong the other way round for a single static
-image (e.g. a Try It upload, not a captured video). The accuracy evaluation
-(site/data/eval.json, 17 real/AI photos) measured ateeqq at 94% accuracy vs.
-sdxl_detector at only 59% on real photos — the reverse of the video finding. A live
-example confirmed it directly (2026-10-01): a Gemini-generated classroom photo (visibly
-AI — garbled, nonsense text on every whiteboard, a classic diffusion-model tell) was
-correctly read by ateeqq as 100% AI, while sdxl_detector missed it entirely at 4%,
-consistent with sdxl_detector being specialized around Stable-Diffusion-XL-style
-output specifically and not generalizing to a different generator's images. So a
-SINGLE image uses the opposite weighting (see IMAGE_ATEEQQ_WEIGHT / IMAGE_SDXL_WEIGHT)
-from a VIDEO's multiple frames (see VIDEO_ATEEQQ_WEIGHT / VIDEO_SDXL_WEIGHT) — there is
-no one weighting that's right for both, because different generators and different
-compression pipelines expose different weaknesses in each model.
+image (e.g. a Try It upload, not a captured video). A small accuracy evaluation
+(site/data/eval.json, 17 real/AI photos, 2026-10-01) measured ateeqq at 94% accuracy vs.
+sdxl_detector at only 59% on real photos — the reverse of the video finding — so a SINGLE
+image uses the opposite weighting (see IMAGE_ATEEQQ_WEIGHT / IMAGE_SDXL_WEIGHT) from a
+VIDEO's multiple frames.
+
+A live Gemini-generated photo then suggested going further: ateeqq correctly read it as
+100% AI while sdxl_detector missed it entirely at 4%, so for a few messages this module
+also leaned on ateeqq's reading (instead of "Unsure") whenever the two models disagreed on
+an image. That turned out to be a mistake from generalizing off one example. A follow-up
+audit of 31 real/AI images (2026-10-01, the same day) found ateeqq was only right 7 of 13
+times (54%) when the two models actually disagreed — barely better than chance, and not
+nearly strong enough evidence to justify a confident answer over "Unsure". That lean was
+reverted: an image now says "Unsure" on real disagreement, exactly like video does, and the
+IMAGE_*_WEIGHT split itself was narrowed from the original 94%-vs-59% evaluation to the
+71-31-image evaluation's steadier 77%-vs-71% read. On that same 31-image set, every case
+where both models agreed was correct except one — so "Unsure" on disagreement is doing
+its job: the few wrong answers left all came from both models confidently, independently
+agreeing on the wrong thing, which no reweighting or lean can fix (see the Instagram
+finding above for the same shape of problem). Different generators and different
+compression pipelines expose different weaknesses in each model; there is no one
+weighting, or one rule for disagreement, that's right for every case.
 """
 
 import statistics
@@ -64,11 +74,6 @@ import statistics
 DISAGREEMENT_THRESHOLD = 0.6
 # Confidence below this counts as a "close call" and gets an extra caveat reason.
 CLOSE_CALL_CONFIDENCE = 65
-# Confidence ceiling when an image's verdict leans on ateeqq over an active disagreement
-# from sdxl_detector (see model_disagreement handling below) — lower than the normal
-# ceiling, since an active disagreement is real evidence of uncertainty even when we trust
-# one model's track record more than the other's.
-DISAGREEMENT_LEAN_MAX_CONFIDENCE = 75
 
 # How much each model's (median) score counts toward the blended content_ai score, for a
 # VIDEO (multiple frames — a YouTube Short or Instagram Reel). See the module docstring
@@ -76,10 +81,10 @@ DISAGREEMENT_LEAN_MAX_CONFIDENCE = 75
 VIDEO_ATEEQQ_WEIGHT = 0.3
 VIDEO_SDXL_WEIGHT = 0.7
 
-# Same, but for a single IMAGE (e.g. a Try It upload or the truthlens MCP tool) — the
-# opposite split, per the module docstring's eval.json + Gemini-image evidence.
-IMAGE_ATEEQQ_WEIGHT = 0.7
-IMAGE_SDXL_WEIGHT = 0.3
+# Same, but for a single IMAGE (e.g. a Try It upload or the truthlens MCP tool) — ateeqq
+# still favored, but by less than the first (17-image) eval run suggested; see docstring.
+IMAGE_ATEEQQ_WEIGHT = 0.55
+IMAGE_SDXL_WEIGHT = 0.45
 
 # Default confidence ceiling (module docstring: "we are never 100% sure"), and a lower,
 # platform-specific ceiling for platforms where a real audit measured worse reliability.
@@ -149,28 +154,7 @@ def verdict(frame_scores, disclosed=False, factcheck=None, platform=None, conten
 
     model_disagreement = abs(ateeqq_score - sdxl_score) > DISAGREEMENT_THRESHOLD
 
-    if model_disagreement and content_type == "image":
-        # For a single image (not video), ateeqq is the measurably more reliable model
-        # (module docstring: 94% vs. 59% accuracy on real photos, confirmed live on a
-        # Gemini-generated image sdxl_detector missed entirely). So for images specifically,
-        # lean on ateeqq's reading instead of refusing to answer — with a reduced confidence
-        # ceiling (DISAGREEMENT_LEAN_MAX_CONFIDENCE) since sdxl_detector actively disagreeing
-        # is real, if weaker, evidence of uncertainty. Video keeps the plain "Unsure" behavior
-        # below, since there's no equivalent evidence there for which model to trust more.
-        if ateeqq_score >= 0.5:
-            label = "Likely AI-Generated"
-            raw_confidence = round(ateeqq_score * 100)
-        else:
-            label = "Likely Real"
-            raw_confidence = round((1 - ateeqq_score) * 100)
-        confidence = min(max_confidence, DISAGREEMENT_LEAN_MAX_CONFIDENCE, raw_confidence)
-        reasons.append(
-            f"The two detectors disagreed (ateeqq read {ateeqq_score:.2f}, sdxl-detector "
-            f"read {sdxl_score:.2f}), but ateeqq is the more reliable model on single "
-            "images per our evaluation data, so this leans on ateeqq's reading rather "
-            "than refusing to answer."
-        )
-    elif model_disagreement:
+    if model_disagreement:
         label = "Unsure"
         confidence = None
         reasons.append(

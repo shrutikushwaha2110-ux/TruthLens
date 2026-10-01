@@ -5,7 +5,6 @@ or plainly:
 """
 
 from verdict import (
-    DISAGREEMENT_LEAN_MAX_CONFIDENCE,
     IMAGE_ATEEQQ_WEIGHT,
     IMAGE_SDXL_WEIGHT,
     PLATFORM_MAX_CONFIDENCE,
@@ -63,31 +62,20 @@ def test_image_close_call_leans_real():
     assert any("close call" in reason for reason in r["reasons"])
 
 
-def test_image_disagreement_leans_on_ateeqq_toward_ai():
-    # Reproduces a real event (2026-10-01): a Gemini-generated photo where ateeqq read
-    # 100% AI (correct — the image had garbled, nonsense whiteboard text, a classic
-    # diffusion-model tell) while sdxl_detector missed it at 4%. For images, ateeqq's
-    # measurably better track record (site/data/eval.json) means we lean on it instead of
-    # refusing to answer, but at a reduced confidence ceiling since this is a real
-    # disagreement, not full agreement.
+def test_image_disagreement_says_unsure_not_a_guess():
+    # A 31-image follow-up audit (2026-10-01) found ateeqq was right only 7 of 13 times
+    # (54%) when the two models actually disagreed on an image — not nearly strong enough
+    # to justify trusting it over "Unsure" (an earlier version of this code briefly did
+    # lean on ateeqq here, based on a single example; that didn't hold up and was reverted).
+    # Reproduces the real Gemini-photo case: ateeqq read 100% AI, sdxl_detector read 4%.
     r = verdict([frame(1.00, 0.04)], content_type="image")
-    assert r["verdict"] == "Likely AI-Generated"
-    assert r["confidence"] == DISAGREEMENT_LEAN_MAX_CONFIDENCE
-    assert any("leans on ateeqq" in reason for reason in r["reasons"])
+    assert r["verdict"] == "Unsure"
+    assert r["confidence"] is None
 
 
-def test_image_disagreement_leans_on_ateeqq_toward_real():
-    # Same mechanism, the other direction: ateeqq confidently says real, sdxl disagrees.
-    r = verdict([frame(0.1, 0.9)], content_type="image")
-    assert r["verdict"] == "Likely Real"
-    assert r["confidence"] == DISAGREEMENT_LEAN_MAX_CONFIDENCE
-    assert any("leans on ateeqq" in reason for reason in r["reasons"])
-
-
-def test_video_single_frame_disagreement_stays_unsure():
-    # The same raw scores that lean on ateeqq for an image still say "Unsure" for video —
-    # there's no equivalent evidence for which model to trust more there (see module
-    # docstring: the YouTube audit found ateeqq unreliable, not that it's simply "better").
+def test_video_single_frame_disagreement_also_unsure():
+    # Images and video now handle disagreement identically — content_type only changes
+    # the model weighting used when they DON'T disagree (see weighted_image/weighted_video).
     r = verdict([frame(0.9, 0.2)], content_type="video")
     assert r["verdict"] == "Unsure"
     assert r["confidence"] is None

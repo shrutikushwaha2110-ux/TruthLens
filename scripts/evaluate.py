@@ -22,15 +22,24 @@ from verdict import verdict as compute_verdict  # noqa: E402
 
 EVAL_DIR = PROJECT_ROOT / "eval"
 OUT_PATH = PROJECT_ROOT / "site" / "data" / "eval.json"
-IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+# Files that are never images, regardless of what a browser/CMS named them.
+IGNORED_NAMES = {".gitkeep", "readme.md", ".ds_store", "thumbs.db"}
 
 AI_VERDICTS = {"Likely AI-Generated", "AI-Generated (creator disclosed)"}
 
 
 def find_images(folder: Path) -> list[Path]:
+    """Every non-hidden file in the folder, regardless of extension — real-world image
+    files show up with all sorts of extensions (.avif, a news CMS's .cms, no extension at
+    all), so we try to actually open each one as an image rather than pre-filtering by a
+    fixed extension list and silently dropping files that don't match it."""
     if not folder.exists():
         return []
-    return sorted(p for p in folder.iterdir() if p.suffix.lower() in IMAGE_EXTENSIONS)
+    return sorted(
+        p
+        for p in folder.iterdir()
+        if p.is_file() and p.name.lower() not in IGNORED_NAMES
+    )
 
 
 def evaluate_folder(folder: Path, true_label: str) -> list[dict]:
