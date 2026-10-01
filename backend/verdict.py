@@ -134,7 +134,7 @@ def verdict(frame_scores, disclosed=False, factcheck=None, platform=None):
         reasons.append(
             f"{n_ai_frames} of {len(frame_ai)} frame(s) looked AI-generated to both detectors."
         )
-        if raw_confidence > max_confidence:
+        if platform in PLATFORM_MAX_CONFIDENCE and raw_confidence > max_confidence:
             reasons.append(
                 f"Confidence capped at {max_confidence}% — real testing on this platform found "
                 "the detectors are less reliable here than usual."
@@ -149,7 +149,7 @@ def verdict(frame_scores, disclosed=False, factcheck=None, platform=None):
         reasons.append(
             f"{n_real_frames} of {len(frame_ai)} frame(s) looked real to both detectors."
         )
-        if raw_confidence > max_confidence:
+        if platform in PLATFORM_MAX_CONFIDENCE and raw_confidence > max_confidence:
             reasons.append(
                 f"Confidence capped at {max_confidence}% — real testing on this platform found "
                 "the detectors are less reliable here than usual."

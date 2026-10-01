@@ -119,6 +119,15 @@ def test_instagram_platform_confidence_cap():
     assert r2["confidence"] == 95
 
 
+def test_default_cap_does_not_falsely_claim_platform_testing():
+    # Regression test: hitting the ordinary 95% ceiling (no platform override at all)
+    # must NOT say "real testing on this platform found..." — that claim is only true
+    # when an actual platform-specific cap from PLATFORM_MAX_CONFIDENCE applied.
+    r = verdict([frame(1.0, 1.0)])
+    assert r["confidence"] == 95
+    assert not any("platform" in reason.lower() for reason in r["reasons"])
+
+
 def test_instagram_disclosed_confidence_unaffected_by_platform_cap():
     # Disclosure isn't a detector reading, so the platform's lower ceiling doesn't apply.
     r = verdict([frame(0.1, 0.1)], disclosed=True, platform="instagram-reel")
