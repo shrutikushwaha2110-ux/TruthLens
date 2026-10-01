@@ -65,6 +65,16 @@ agreeing on the wrong thing, which no reweighting or lean can fix (see the Insta
 finding above for the same shape of problem). Different generators and different
 compression pipelines expose different weaknesses in each model; there is no one
 weighting, or one rule for disagreement, that's right for every case.
+
+A live session on real YouTube Shorts (2026-10-01) found the same "both models
+confidently agree and are wrong" problem the Instagram audit found, and worse than the
+original 10-Short audit suggested: of 17 Shorts scrolled, both models agreed at 90%+ on
+10 of them, and visually checking several of those videos directly found at least two
+that were unambiguously real (a person filming themselves at a concert with stage
+lighting; someone dancing in their own bedroom, door and light switch visible, no
+filters) — both confidently called "Likely AI-Generated" anyway. Same shape of problem
+as Instagram, same fix: YouTube Shorts gets the same reduced confidence ceiling (see
+PLATFORM_MAX_CONFIDENCE) rather than an invented label override.
 """
 
 import statistics
@@ -91,6 +101,7 @@ IMAGE_SDXL_WEIGHT = 0.45
 DEFAULT_MAX_CONFIDENCE = 95
 PLATFORM_MAX_CONFIDENCE = {
     "instagram-reel": 70,
+    "youtube-shorts": 70,
 }
 
 

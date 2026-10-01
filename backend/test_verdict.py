@@ -143,6 +143,17 @@ def test_instagram_platform_confidence_cap():
     assert r2["confidence"] == 95
 
 
+def test_youtube_shorts_platform_confidence_cap():
+    # Live testing on real Shorts (2026-10-01) found the same "both models confidently
+    # agree and are wrong" problem as Instagram — visually confirmed on at least two
+    # unambiguously real videos. Same fix: a lower confidence ceiling, not a label change.
+    yt_cap = PLATFORM_MAX_CONFIDENCE["youtube-shorts"]
+    r = verdict([frame(1.0, 1.0)], platform="youtube-shorts", content_type="video")
+    assert r["verdict"] == "Likely AI-Generated"
+    assert r["confidence"] == yt_cap
+    assert any("capped" in reason for reason in r["reasons"])
+
+
 def test_default_cap_does_not_falsely_claim_platform_testing():
     # Regression test: hitting the ordinary 95% ceiling (no platform override at all)
     # must NOT say "real testing on this platform found..." — that claim is only true
