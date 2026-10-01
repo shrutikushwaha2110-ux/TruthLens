@@ -84,6 +84,19 @@ truthlens/
   WhatsApp-compressed photos. Different compression pipelines expose different weaknesses in each
   model — this is the same phenomenon the research behind this project documents, playing out in
   our own testing.
+- **Model weighting differs for images vs. video, based on evidence, not guesswork.** The eval
+  set measured `ateeqq` at 94% accuracy vs. `sdxl_detector` at 59% on real photos — the opposite of
+  the video finding above — and a live example confirmed it directly: a Gemini-generated photo
+  (visibly AI — garbled, nonsense whiteboard text) was correctly read by `ateeqq` as 100% AI while
+  `sdxl_detector` missed it at 4%, consistent with `sdxl_detector` being specialized around
+  Stable-Diffusion-XL-style output specifically. So `backend/verdict.py` now uses opposite model
+  weights for a single image vs. a video's multiple frames (`IMAGE_*_WEIGHT` vs. `VIDEO_*_WEIGHT`).
+  It also leans on `ateeqq`'s reading (at a reduced, 75%-max confidence) when the two models sharply
+  disagree on a single image, instead of saying "Unsure" — justified by `ateeqq`'s measurably better
+  track record on images specifically. Video keeps the plain "Unsure" behavior on disagreement,
+  since there's no equivalent evidence there for which model to trust more. This fix improves
+  accuracy on images based on real evidence; it does not and cannot make any detector "perfect" —
+  that would mean inventing confidence that isn't there.
 - **Small sample sizes.** The feed-audit, accuracy evaluation, and Instagram audit all used small
   samples (10 Shorts, ~17 images, 8 Reels). Treat every number on this site as a snapshot, not a
   guarantee.

@@ -96,13 +96,23 @@ def _lookup_factcheck(caption: str | None):
 
 
 def _run_pipeline(
-    images: list[Image.Image], disclosed: bool, caption: str | None, platform: str | None = None
+    images: list[Image.Image],
+    disclosed: bool,
+    caption: str | None,
+    platform: str | None = None,
+    content_type: str = "video",
 ):
     # Scores all frames' model calls concurrently instead of one at a time — see
     # detector.score_images for why this is a real (not just cosmetic) speedup.
     frame_scores = detector.score_images(images)
     factcheck = _lookup_factcheck(caption)
-    return compute_verdict(frame_scores, disclosed=disclosed, factcheck=factcheck, platform=platform)
+    return compute_verdict(
+        frame_scores,
+        disclosed=disclosed,
+        factcheck=factcheck,
+        platform=platform,
+        content_type=content_type,
+    )
 
 
 @app.post("/analyze/frames")
@@ -111,7 +121,9 @@ def analyze_frames(req: FramesRequest):
         return _result_cache[req.id]
 
     images = [_decode_base64_image(f) for f in req.frames]
-    result = _run_pipeline(images, req.disclosed, req.caption, platform=req.platform)
+    result = _run_pipeline(
+        images, req.disclosed, req.caption, platform=req.platform, content_type="video"
+    )
     result["id"] = req.id
     result["platform"] = req.platform
     _result_cache[req.id] = result
@@ -122,14 +134,14 @@ def analyze_frames(req: FramesRequest):
 async def analyze_image(file: UploadFile = File(...)):
     raw = await file.read()
     image = Image.open(io.BytesIO(raw)).convert("RGB")
-    result = _run_pipeline([image], disclosed=False, caption=None)
+    result = _run_pipeline([image], disclosed=False, caption=None, content_type="image")
     return result
 
 
 @app.post("/analyze/image-path")
 def analyze_image_path(req: ImagePathRequest):
     image = Image.open(req.path).convert("RGB")
-    result = _run_pipeline([image], disclosed=False, caption=None)
+    result = _run_pipeline([image], disclosed=False, caption=None, content_type="image")
     return result
 
 

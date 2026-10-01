@@ -4,16 +4,29 @@ or plainly:
     backend/.venv/Scripts/python backend/test_verdict.py
 """
 
-from verdict import ATEEQQ_WEIGHT, PLATFORM_MAX_CONFIDENCE, SDXL_WEIGHT, verdict
+from verdict import (
+    DISAGREEMENT_LEAN_MAX_CONFIDENCE,
+    IMAGE_ATEEQQ_WEIGHT,
+    IMAGE_SDXL_WEIGHT,
+    PLATFORM_MAX_CONFIDENCE,
+    VIDEO_ATEEQQ_WEIGHT,
+    VIDEO_SDXL_WEIGHT,
+    verdict,
+)
 
 
 def frame(ateeqq, sdxl):
     return {"ateeqq": ateeqq, "sdxl_detector": sdxl}
 
 
-def weighted(ateeqq, sdxl):
-    """content_ai for a single frame under the current model weights, for test expectations."""
-    return ATEEQQ_WEIGHT * ateeqq + SDXL_WEIGHT * sdxl
+def weighted_image(ateeqq, sdxl):
+    """content_ai for a single frame under the IMAGE weights, for test expectations."""
+    return IMAGE_ATEEQQ_WEIGHT * ateeqq + IMAGE_SDXL_WEIGHT * sdxl
+
+
+def weighted_video(ateeqq, sdxl):
+    """content_ai for a single frame under the VIDEO weights, for test expectations."""
+    return VIDEO_ATEEQQ_WEIGHT * ateeqq + VIDEO_SDXL_WEIGHT * sdxl
 
 
 def test_disclosed_always_wins():
@@ -23,20 +36,20 @@ def test_disclosed_always_wins():
 
 
 def test_image_likely_real():
-    r = verdict([frame(0.1, 0.15)])
+    r = verdict([frame(0.1, 0.15)], content_type="image")
     assert r["verdict"] == "Likely Real"
-    assert r["confidence"] == min(95, round((1 - weighted(0.1, 0.15)) * 100))
+    assert r["confidence"] == min(95, round((1 - weighted_image(0.1, 0.15)) * 100))
 
 
 def test_image_likely_ai():
-    r = verdict([frame(0.9, 0.85)])
+    r = verdict([frame(0.9, 0.85)], content_type="image")
     assert r["verdict"] == "Likely AI-Generated"
-    assert r["confidence"] == min(95, round(weighted(0.9, 0.85) * 100))
+    assert r["confidence"] == min(95, round(weighted_image(0.9, 0.85) * 100))
 
 
 def test_image_close_call_leans_ai():
     # content_ai exactly 0.5 -> a tie leans AI-generated, with low confidence and a caveat.
-    r = verdict([frame(0.5, 0.5)])
+    r = verdict([frame(0.5, 0.5)], content_type="image")
     assert r["verdict"] == "Likely AI-Generated"
     assert r["confidence"] == 50
     assert any("close call" in reason for reason in r["reasons"])
@@ -44,28 +57,51 @@ def test_image_close_call_leans_ai():
 
 def test_image_close_call_leans_real():
     # content_ai = 0.4 -> closer to real, decisive lean rather than "Unsure".
-    r = verdict([frame(0.4, 0.4)])
+    r = verdict([frame(0.4, 0.4)], content_type="image")
     assert r["verdict"] == "Likely Real"
     assert r["confidence"] == 60
     assert any("close call" in reason for reason in r["reasons"])
 
 
-def test_image_single_frame_model_disagreement():
-    # |0.9 - 0.2| = 0.7 > 0.6 -> still Unsure, this is genuinely extreme disagreement.
-    r = verdict([frame(0.9, 0.2)])
+def test_image_disagreement_leans_on_ateeqq_toward_ai():
+    # Reproduces a real event (2026-10-01): a Gemini-generated photo where ateeqq read
+    # 100% AI (correct — the image had garbled, nonsense whiteboard text, a classic
+    # diffusion-model tell) while sdxl_detector missed it at 4%. For images, ateeqq's
+    # measurably better track record (site/data/eval.json) means we lean on it instead of
+    # refusing to answer, but at a reduced confidence ceiling since this is a real
+    # disagreement, not full agreement.
+    r = verdict([frame(1.00, 0.04)], content_type="image")
+    assert r["verdict"] == "Likely AI-Generated"
+    assert r["confidence"] == DISAGREEMENT_LEAN_MAX_CONFIDENCE
+    assert any("leans on ateeqq" in reason for reason in r["reasons"])
+
+
+def test_image_disagreement_leans_on_ateeqq_toward_real():
+    # Same mechanism, the other direction: ateeqq confidently says real, sdxl disagrees.
+    r = verdict([frame(0.1, 0.9)], content_type="image")
+    assert r["verdict"] == "Likely Real"
+    assert r["confidence"] == DISAGREEMENT_LEAN_MAX_CONFIDENCE
+    assert any("leans on ateeqq" in reason for reason in r["reasons"])
+
+
+def test_video_single_frame_disagreement_stays_unsure():
+    # The same raw scores that lean on ateeqq for an image still say "Unsure" for video —
+    # there's no equivalent evidence for which model to trust more there (see module
+    # docstring: the YouTube audit found ateeqq unreliable, not that it's simply "better").
+    r = verdict([frame(0.9, 0.2)], content_type="video")
     assert r["verdict"] == "Unsure"
     assert r["confidence"] is None
 
 
 def test_image_moderate_disagreement_no_longer_unsure():
-    # |0.8 - 0.3| = 0.5, under the new 0.6 threshold -> decisive call, not "Unsure".
-    r = verdict([frame(0.8, 0.3)])
+    # |0.8 - 0.3| = 0.5, under the 0.6 threshold -> decisive call, not "Unsure".
+    r = verdict([frame(0.8, 0.3)], content_type="image")
     assert r["verdict"] != "Unsure"
 
 
 def test_video_three_frames_all_ai():
     frames = [frame(0.8, 0.85), frame(0.9, 0.88), frame(0.95, 0.9)]
-    r = verdict(frames)
+    r = verdict(frames, content_type="video")
     assert r["verdict"] == "Likely AI-Generated"
     assert r["confidence"] is not None
     assert r["confidence"] <= 95
@@ -73,7 +109,7 @@ def test_video_three_frames_all_ai():
 
 def test_video_three_frames_all_real():
     frames = [frame(0.05, 0.1), frame(0.1, 0.05), frame(0.15, 0.1)]
-    r = verdict(frames)
+    r = verdict(frames, content_type="video")
     assert r["verdict"] == "Likely Real"
 
 
@@ -81,7 +117,7 @@ def test_video_genuine_model_disagreement():
     # Both models consistently disagree with each other across all 3 frames
     # (ateeqq median 0.9 vs sdxl median 0.1) -> genuine disagreement, Unsure.
     frames = [frame(0.9, 0.1), frame(0.85, 0.15), frame(0.95, 0.05)]
-    r = verdict(frames)
+    r = verdict(frames, content_type="video")
     assert r["verdict"] == "Unsure"
     assert any("disagreed overall" in reason for reason in r["reasons"])
 
@@ -91,7 +127,7 @@ def test_video_single_noisy_frame_does_not_flip_verdict():
     # (0.99) while sdxl and ateeqq's own other frames stay low/consistent. Taking each
     # model's median across frames absorbs the one-off spike instead of forcing "Unsure".
     frames = [frame(0.05, 0.08), frame(0.99, 0.02), frame(0.06, 0.05)]
-    r = verdict(frames)
+    r = verdict(frames, content_type="video")
     # ateeqq median = 0.06, sdxl median = 0.05 -> models agree overall, despite frame 2.
     assert r["verdict"] == "Likely Real"
     assert r["verdict"] != "Unsure"
@@ -109,13 +145,13 @@ def test_instagram_platform_confidence_cap():
     # agree confidently (95%+) on content later confirmed to likely be real — Instagram
     # gets a lower confidence ceiling as a result, without changing the label itself.
     ig_cap = PLATFORM_MAX_CONFIDENCE["instagram-reel"]
-    r = verdict([frame(1.0, 1.0)], platform="instagram-reel")
+    r = verdict([frame(1.0, 1.0)], platform="instagram-reel", content_type="video")
     assert r["verdict"] == "Likely AI-Generated"
     assert r["confidence"] == ig_cap
     assert any("capped" in reason for reason in r["reasons"])
 
     # The same scores on an unspecified platform still get the normal, higher cap.
-    r2 = verdict([frame(1.0, 1.0)])
+    r2 = verdict([frame(1.0, 1.0)], content_type="video")
     assert r2["confidence"] == 95
 
 

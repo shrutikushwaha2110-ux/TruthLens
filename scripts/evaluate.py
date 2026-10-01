@@ -44,7 +44,7 @@ def evaluate_folder(folder: Path, true_label: str) -> list[dict]:
             continue
 
         scores = detector.score_image(image)
-        verdict_result = compute_verdict([scores])
+        verdict_result = compute_verdict([scores], content_type="image")
         results.append(
             {
                 "file": path.name,

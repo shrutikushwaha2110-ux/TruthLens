@@ -41,6 +41,20 @@ the models genuinely agree with each other. Rather than silently overriding two
 agreeing models (which would mean inventing a result), Instagram Reels gets a lower
 confidence ceiling (see PLATFORM_MAX_CONFIDENCE) to honestly reflect this measured,
 worse reliability, without ever touching the "AI-Generated" vs. "Real" label itself.
+
+The video weighting above is specifically wrong the other way round for a single static
+image (e.g. a Try It upload, not a captured video). The accuracy evaluation
+(site/data/eval.json, 17 real/AI photos) measured ateeqq at 94% accuracy vs.
+sdxl_detector at only 59% on real photos — the reverse of the video finding. A live
+example confirmed it directly (2026-10-01): a Gemini-generated classroom photo (visibly
+AI — garbled, nonsense text on every whiteboard, a classic diffusion-model tell) was
+correctly read by ateeqq as 100% AI, while sdxl_detector missed it entirely at 4%,
+consistent with sdxl_detector being specialized around Stable-Diffusion-XL-style
+output specifically and not generalizing to a different generator's images. So a
+SINGLE image uses the opposite weighting (see IMAGE_ATEEQQ_WEIGHT / IMAGE_SDXL_WEIGHT)
+from a VIDEO's multiple frames (see VIDEO_ATEEQQ_WEIGHT / VIDEO_SDXL_WEIGHT) — there is
+no one weighting that's right for both, because different generators and different
+compression pipelines expose different weaknesses in each model.
 """
 
 import statistics
@@ -50,11 +64,22 @@ import statistics
 DISAGREEMENT_THRESHOLD = 0.6
 # Confidence below this counts as a "close call" and gets an extra caveat reason.
 CLOSE_CALL_CONFIDENCE = 65
+# Confidence ceiling when an image's verdict leans on ateeqq over an active disagreement
+# from sdxl_detector (see model_disagreement handling below) — lower than the normal
+# ceiling, since an active disagreement is real evidence of uncertainty even when we trust
+# one model's track record more than the other's.
+DISAGREEMENT_LEAN_MAX_CONFIDENCE = 75
 
-# How much each model's (median) score counts toward the blended content_ai score.
-# See the note at content_ai's computation below for why these aren't equal.
-ATEEQQ_WEIGHT = 0.3
-SDXL_WEIGHT = 0.7
+# How much each model's (median) score counts toward the blended content_ai score, for a
+# VIDEO (multiple frames — a YouTube Short or Instagram Reel). See the module docstring
+# for why these aren't equal and aren't the same as the image weights below.
+VIDEO_ATEEQQ_WEIGHT = 0.3
+VIDEO_SDXL_WEIGHT = 0.7
+
+# Same, but for a single IMAGE (e.g. a Try It upload or the truthlens MCP tool) — the
+# opposite split, per the module docstring's eval.json + Gemini-image evidence.
+IMAGE_ATEEQQ_WEIGHT = 0.7
+IMAGE_SDXL_WEIGHT = 0.3
 
 # Default confidence ceiling (module docstring: "we are never 100% sure"), and a lower,
 # platform-specific ceiling for platforms where a real audit measured worse reliability.
@@ -71,7 +96,7 @@ def _frame_ai_scores(frame_scores):
     return [statistics.mean(frame.values()) for frame in frame_scores]
 
 
-def verdict(frame_scores, disclosed=False, factcheck=None, platform=None):
+def verdict(frame_scores, disclosed=False, factcheck=None, platform=None, content_type="video"):
     """
     frame_scores: list of per-frame dicts from score_image().
                   1 item for an image post, 3 items for a video.
@@ -80,6 +105,11 @@ def verdict(frame_scores, disclosed=False, factcheck=None, platform=None):
     platform:     optional platform label (e.g. "instagram-reel") used only to look up a
                   lower confidence ceiling where real testing has measured one; doesn't
                   change which label (Real/AI/Unsure) is chosen.
+    content_type: "video" (default) or "image" — picks which evidence-based model
+                  weighting to use (see module docstring). Callers analyzing a single
+                  standalone image (Try It, the MCP tool, the eval script) should pass
+                  "image"; callers analyzing captured video frames should leave this as
+                  "video" (or pass it explicitly for clarity).
 
     Returns a dict:
         {verdict, confidence, content_ai, frames, reasons, factcheck}
@@ -104,20 +134,43 @@ def verdict(frame_scores, disclosed=False, factcheck=None, platform=None):
     # Each model's median across all frames — robust to one noisy frame from one model.
     ateeqq_score = statistics.median(frame["ateeqq"] for frame in frame_scores)
     sdxl_score = statistics.median(frame["sdxl_detector"] for frame in frame_scores)
-    # Weighted, not a plain average: the feed-auditor findings (2026-09-29) and the project
-    # owner's own live testing both show ateeqq reads persistently high on ordinary real
-    # YouTube video, while sdxl_detector tracks real vs. AI content far more reliably on
-    # this kind of content. sdxl_detector gets more say in the blended score as a result;
-    # ateeqq still contributes, and the disagreement check below still compares their
-    # unweighted, independent reads.
-    content_ai = ATEEQQ_WEIGHT * ateeqq_score + SDXL_WEIGHT * sdxl_score
+    # Weighted, not a plain average — and which weighting depends on content_type, since
+    # the evidence (module docstring) shows the two models swap reliability between video
+    # and static images. The disagreement check below still compares their unweighted,
+    # independent reads regardless of content_type.
+    if content_type == "image":
+        ateeqq_weight, sdxl_weight = IMAGE_ATEEQQ_WEIGHT, IMAGE_SDXL_WEIGHT
+    else:
+        ateeqq_weight, sdxl_weight = VIDEO_ATEEQQ_WEIGHT, VIDEO_SDXL_WEIGHT
+    content_ai = ateeqq_weight * ateeqq_score + sdxl_weight * sdxl_score
 
     # Used only to build the human-readable reason sentences below.
     frame_ai = _frame_ai_scores(frame_scores)
 
     model_disagreement = abs(ateeqq_score - sdxl_score) > DISAGREEMENT_THRESHOLD
 
-    if model_disagreement:
+    if model_disagreement and content_type == "image":
+        # For a single image (not video), ateeqq is the measurably more reliable model
+        # (module docstring: 94% vs. 59% accuracy on real photos, confirmed live on a
+        # Gemini-generated image sdxl_detector missed entirely). So for images specifically,
+        # lean on ateeqq's reading instead of refusing to answer — with a reduced confidence
+        # ceiling (DISAGREEMENT_LEAN_MAX_CONFIDENCE) since sdxl_detector actively disagreeing
+        # is real, if weaker, evidence of uncertainty. Video keeps the plain "Unsure" behavior
+        # below, since there's no equivalent evidence there for which model to trust more.
+        if ateeqq_score >= 0.5:
+            label = "Likely AI-Generated"
+            raw_confidence = round(ateeqq_score * 100)
+        else:
+            label = "Likely Real"
+            raw_confidence = round((1 - ateeqq_score) * 100)
+        confidence = min(max_confidence, DISAGREEMENT_LEAN_MAX_CONFIDENCE, raw_confidence)
+        reasons.append(
+            f"The two detectors disagreed (ateeqq read {ateeqq_score:.2f}, sdxl-detector "
+            f"read {sdxl_score:.2f}), but ateeqq is the more reliable model on single "
+            "images per our evaluation data, so this leans on ateeqq's reading rather "
+            "than refusing to answer."
+        )
+    elif model_disagreement:
         label = "Unsure"
         confidence = None
         reasons.append(
