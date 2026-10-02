@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-10-01T06:35:48.843062+00:00",
-  "total_images": 31,
-  "overall_accuracy": 0.5161290322580645,
-  "decisive_accuracy": 0.9411764705882353,
-  "decisive_count": 17,
+  "generated_at": "2026-10-01T07:09:15.762707+00:00",
+  "total_images": 32,
+  "overall_accuracy": 0.5,
+  "decisive_accuracy": 0.8888888888888888,
+  "decisive_count": 18,
   "unsure_count": 14,
   "per_model_accuracy": {
-    "ateeqq": 0.7741935483870968,
-    "sdxl_detector": 0.7096774193548387
+    "ateeqq": 0.75,
+    "sdxl_detector": 0.6875
   },
   "counts": {
     "real": {
-      "total": 16,
+      "total": 17,
       "likely_real": 5,
-      "likely_ai_generated": 1,
+      "likely_ai_generated": 2,
       "unsure": 10
     },
     "ai": {
